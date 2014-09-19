@@ -1,0 +1,11 @@
+{
+  "demo-libs": [
+    "vendor/angular/angular.js",
+    "vendor/webodf/webodf.js"
+  ],
+  "styles": [
+  ],
+  "src": [
+    "src/*.js"
+  ]
+}
