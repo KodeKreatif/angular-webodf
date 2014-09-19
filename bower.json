@@ -1,0 +1,20 @@
+{
+  "name": "ng-webodf",
+  "version": "0.0.1",
+  "authors": [
+    "Mohammad Anwari <mdamt@mdamt.net>"
+  ],
+  "description": "Angular WebODF",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.2.25"
+  }
+}
