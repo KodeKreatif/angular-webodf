@@ -11,8 +11,16 @@ gulp.task("webodf", shell.task([
   "mv ./vendor/webodf/webodf.js-VERSION/webodf.js ./vendor/webodf/".replace(/VERSION/g, webodfVersion)
 ]));
 
+gulp.task("clean", function() {
+  return shell.task([
+      "rm -f ./demo/libs.js",
+      "rm -f ./demo/angular-webodf.js",
+      "rm -rf ./dist"
+  ])
+})
+
 gulp.task("src", function() {
-  gulp.src(files.src)
+  return gulp.src(files.src)
   .pipe(concat("angular-webodf.js"))
   .pipe(gulp.dest("./dist/"))
 });
@@ -23,7 +31,7 @@ gulp.task("demo-libs", function() {
   .pipe(gulp.dest("./demo/"))
 });
 
-gulp.task("demo", ["demo-libs", "src"], function() {
+gulp.task("demo", ["clean", "demo-libs", "src"], function() {
   gulp.src("./dist/angular-webodf.js")
   .pipe(gulp.dest("./demo/"))
 });

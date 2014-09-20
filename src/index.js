@@ -1,1 +1,1 @@
-var ngWebODF = angular.module("ngWebODF", [])
+var ngWebODF = angular.module("ngWebODF", ["webodf.directive"])
