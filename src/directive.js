@@ -57,6 +57,7 @@ angular.module("webodf.directive", [])
 
   var initCanvas = function() {
     var e = document.getElementById(elementName);
+    if (!e) return;
     canvas = new odf.OdfCanvas(e); 
     canvas.addListener("statereadychange", initSession);
 
@@ -66,19 +67,25 @@ angular.module("webodf.directive", [])
   };
 
   var link = function($scope, el, attrs, ctrl) {
-    elementName = attrs.id;
+    elementName = attrs.name;
     memberId = attrs.user || "localuser";
     loadUrl = attrs.url;
-    initCanvas();
+    $scope.id = attrs.id;
   };
 
-  var controller = function($scope) {
+  var controller = function($scope, $timeout) {
+    $timeout(function() {
+      initCanvas();
+    }, 0);
   };
 
   return {
     restrict: "E",
     link: link,
     controller: controller,
-    template: ""
+    scope: {
+      id: "@name"
+    },
+    template: "<div class='canvas' id='{{id}}'></div>"
   }
 });
