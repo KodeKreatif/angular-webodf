@@ -32,7 +32,7 @@ gulp.task("demo-libs", function() {
   .pipe(gulp.dest("./demo/"))
 });
 
-gulp.task("demo", ["clean", "demo-libs", "src"], function() {
+gulp.task("demo", ["clean", "webodf", "demo-libs", "src"], function() {
   gulp.src("./dist/angular-webodf.js")
   .pipe(gulp.dest("./demo/"))
 });
