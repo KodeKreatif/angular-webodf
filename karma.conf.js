@@ -3,7 +3,7 @@ module.exports = function(config) {
     frameworks: ["jasmine"],
 
     files: [
-      "vendor/webodf/webodf.js",
+      "vendor/webodf/webodf.js-0.5.4/webodf-debug.js",
       "vendor/angular/angular.js",
       "vendor/angular-mocks/angular-mocks.js",
       "src/*.js",
