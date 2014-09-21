@@ -1,4 +1,6 @@
 demo/*.js
+demo/styles.css
+pages/*
 node_modules/*
 bower_components/*
 dist/*
