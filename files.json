@@ -1,9 +1,11 @@
 {
   "demo-libs": [
     "vendor/angular/angular.js",
-    "vendor/webodf/webodf.js"
+    "vendor/webodf/webodf.js",
+    "vendor/modernizr/modernizr.js"
   ],
-  "styles": [
+  "demo-styles": [
+    "vendor/foundation/css/foundation.css"
   ],
   "src": [
     "src/*.js"

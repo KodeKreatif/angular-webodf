@@ -8,7 +8,7 @@ var webodfVersion = "0.5.4";
 
 gulp.task("webodf", shell.task([
   "mkdir -p ./vendor/webodf",
-  "cd ./vendor/webodf;wget -c http://webodf.org/download/webodf.js-VERSION.zip;unzip webodf.js-VERSION.zip".replace(/VERSION/g, webodfVersion),
+  "cd ./vendor/webodf;wget -c http://webodf.org/download/webodf.js-VERSION.zip;unzip -n webodf.js-VERSION.zip".replace(/VERSION/g, webodfVersion),
   "mv ./vendor/webodf/webodf.js-VERSION/webodf.js ./vendor/webodf/".replace(/VERSION/g, webodfVersion)
 ]));
 
@@ -26,13 +26,19 @@ gulp.task("src", function() {
   .pipe(gulp.dest("./dist/"))
 });
 
+gulp.task("demo-styles", function() {
+  gulp.src(files["demo-styles"])
+  .pipe(concat("styles.css"))
+  .pipe(gulp.dest("./demo/"))
+});
+
 gulp.task("demo-libs", function() {
   gulp.src(files["demo-libs"])
   .pipe(concat("libs.js"))
   .pipe(gulp.dest("./demo/"))
 });
 
-gulp.task("demo", ["clean", "webodf", "demo-libs", "src"], function() {
+gulp.task("demo", ["clean", "webodf", "demo-styles", "demo-libs", "src"], function() {
   gulp.src("./dist/angular-webodf.js")
   .pipe(gulp.dest("./demo/"))
 });
