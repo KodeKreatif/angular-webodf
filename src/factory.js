@@ -50,14 +50,19 @@ angular.module("webodf.factory", [])
 
       data.sessionController.insertLocalCursor();
       data.sessionController.startEditing();
+      $scope.editable = true;
     }
 
     var init = function(scope, element) {
       $scope = scope;
+      $scope.data = data;
       var e = angular.element(element)[0];
       if (!e) return;
       data.canvas = new odf.OdfCanvas(e); 
-      data.canvas.addListener("statereadychange", initSession);
+      $scope.editable = false;
+      if (!data.readOnly) {
+        data.canvas.addListener("statereadychange", initSession);
+      }
 
       if (data.loadUrl) {
         $scope.loaded = true;

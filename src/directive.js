@@ -7,6 +7,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.elementName = attrs.name;
       Canvas().data.memberId = attrs.user || "localuser";
       Canvas().data.loadUrl = attrs.url;
+      Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
       $scope.id = attrs.id;
     };
 
