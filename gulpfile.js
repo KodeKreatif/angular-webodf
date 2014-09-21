@@ -2,6 +2,7 @@ var gulp    = require("gulp");
 var concat  = require("gulp-concat");
 var shell = require("gulp-shell");
 var files = require("./files");
+var karma = require("karma").server;
 
 var webodfVersion = "0.5.4";
 
@@ -35,6 +36,21 @@ gulp.task("demo", ["clean", "demo-libs", "src"], function() {
   gulp.src("./dist/angular-webodf.js")
   .pipe(gulp.dest("./demo/"))
 });
+
+
+gulp.task('test', function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done);
+});
+
+gulp.task('tdd', function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js'
+  }, done);
+});
+
 
 gulp.task("default", [
     ]);
