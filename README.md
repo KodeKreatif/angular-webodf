@@ -2,6 +2,7 @@ Angular WebODF
 ==============
 
 This is the Angular directive for [WebODF](http://www.webodf.org).
+Demo page is available [here](http://kodekreatif.github.io/angular-webodf).
 
 ## How to use
 
@@ -12,6 +13,12 @@ gulp webodf
 ```
   You will have webodf.js in vendor/webodf/ directory. You can specify the WebODF version in `gulpfiles.js`.
   Otherwise you can download it manually from it's site.
+1. Get Angular WebODF directive:
+```
+bower install angular-webodf
+```
+   Copy `dist/angular-webodf.js` to your working directory.
+1. Put together an HTML file:
 
 ```
 <script type="text/javascript" src="angular.js"></script>
