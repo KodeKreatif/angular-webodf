@@ -56,7 +56,7 @@ angular.module("webodf.factory", [])
     var init = function(scope, element) {
       $scope = scope;
       $scope.data = data;
-      var e = angular.element(element)[0];
+      e = angular.element(element.find("odfcanvas"))[0];
       if (!e) return;
       data.canvas = new odf.OdfCanvas(e); 
       $scope.editable = false;
