@@ -18,7 +18,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       scope: {
         id: "@name"
       },
-      template: "<div class='canvas' id='{{id}}'></div>"
+      template: "<odfcanvas class='canvas' id='{{id}}'></odvcanvas>"
     }
   }
 ]);
