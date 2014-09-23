@@ -8,6 +8,7 @@
     "vendor/foundation/css/foundation.css"
   ],
   "src": [
+    "vendor/Rulers/rulers.js",
     "src/*.js"
   ]
 }

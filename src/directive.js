@@ -9,6 +9,8 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
       $scope.id = attrs.id;
+      $scope.ruler = attrs.ruler == "yes";
+      Canvas().data.ruler = $scope.ruler;
     };
 
     return {
@@ -18,7 +20,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       scope: {
         id: "@name"
       },
-      template: "<odfcanvas class='canvas' id='{{id}}'></odvcanvas>"
+      template: "<style>webodf { display:block;position: relative;padding:0px; } canvas.ruler { position:absolute; top: -5px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{id}}'></div>"
     }
   }
 ]);

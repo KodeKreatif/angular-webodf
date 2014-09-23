@@ -4,6 +4,8 @@ angular.module("webodf.factory", [])
   function($window) {
     var data = {};
     var $scope;
+    var canvas;
+    var ruler;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -51,13 +53,27 @@ angular.module("webodf.factory", [])
       data.sessionController.insertLocalCursor();
       data.sessionController.startEditing();
       $scope.editable = true;
+
+      canvas.width = e.clientWidth + 1;
+      canvas.height = 15;
+      ruler.render("#aaa", "cm", 100);
     }
 
     var init = function(scope, element) {
       $scope = scope;
       $scope.data = data;
-      e = angular.element(element.find("odfcanvas"))[0];
+      e = angular.element(element.find("div"))[0];
+      canvas = angular.element(element.find("canvas"))[0];
       if (!e) return;
+
+      ruler = new Ruler("ruler");
+      e.addEventListener("resize", function() {
+        element[0].width = e.clientWidth;
+        element[0].height = e.clientHeight;
+        canvas.width = e.clientWidth + 1;
+        canvas.height = 15;
+        ruler.render("#aaa", "cm", 100);
+      });
       data.canvas = new odf.OdfCanvas(e); 
       $scope.editable = false;
       if (!data.readOnly) {
@@ -68,6 +84,7 @@ angular.module("webodf.factory", [])
         $scope.loaded = true;
         data.canvas.load(data.loadUrl);
       }
+      console.log(e);
     }
 
     return function() {

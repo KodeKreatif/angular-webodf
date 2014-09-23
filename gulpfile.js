@@ -12,6 +12,11 @@ gulp.task("webodf", shell.task([
   "mv ./vendor/webodf/webodf.js-VERSION/webodf.js ./vendor/webodf/".replace(/VERSION/g, webodfVersion)
 ]));
 
+gulp.task("rulers", shell.task([
+    "mkdir -p ./vendor/Rulers",
+    "cd ./vendor/Rulers;wget -c https://github.com/psychobunny/Rulers/archive/master.zip;unzip -n master.zip; cp Rulers-master/src/rulers.js .",
+  ]));
+
 gulp.task("clean", function() {
   return shell.task([
       "rm -f ./demo/libs.js",
@@ -20,7 +25,7 @@ gulp.task("clean", function() {
   ])
 })
 
-gulp.task("src", function() {
+gulp.task("src", ["rulers"],function() {
   return gulp.src(files.src)
   .pipe(concat("angular-webodf.js"))
   .pipe(gulp.dest("./dist/"))
