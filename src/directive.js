@@ -20,7 +20,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       scope: {
         id: "@name"
       },
-      template: "<style>webodf { display:block;position: relative;padding:0px; } canvas.ruler { position:absolute; top: -5px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{id}}'></div>"
+      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { position: absolute; top: 0px; left:0 px; min-height: 100px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 10px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{id}}'></div>"
     }
   }
 ]);

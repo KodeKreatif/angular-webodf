@@ -6,6 +6,8 @@ angular.module("webodf.factory", [])
     var $scope;
     var canvas;
     var ruler;
+    var toolbar;
+    var webOdfCanvas;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -54,7 +56,7 @@ angular.module("webodf.factory", [])
       data.sessionController.startEditing();
       $scope.editable = true;
 
-      canvas.width = e.clientWidth + 1;
+      canvas.width = webOdfCanvas.clientWidth + 1;
       canvas.height = 15;
       ruler.render("#aaa", "cm", 100);
     }
@@ -62,19 +64,21 @@ angular.module("webodf.factory", [])
     var init = function(scope, element) {
       $scope = scope;
       $scope.data = data;
-      e = angular.element(element.find("div"))[0];
+      var list = element.find("div");
+      webOdfCanvas = angular.element(list)[1];
+      toolbar = angular.element(list)[0];
       canvas = angular.element(element.find("canvas"))[0];
-      if (!e) return;
+      if (!webOdfCanvas) return;
 
       ruler = new Ruler(canvas);
-      e.addEventListener("resize", function() {
-        element[0].width = e.clientWidth;
-        element[0].height = e.clientHeight;
-        canvas.width = e.clientWidth + 1;
+      webOdfCanvas.addEventListener("resize", function() {
+        element[0].width = webOdfCanvas.clientWidth;
+        element[0].height = webOdfCanvas.clientHeight;
+        canvas.width = webOdfCanvas.clientWidth + 1;
         canvas.height = 15;
         ruler.render("#aaa", "cm", 100);
       });
-      data.canvas = new odf.OdfCanvas(e); 
+      data.canvas = new odf.OdfCanvas(webOdfCanvas); 
       $scope.editable = false;
       if (!data.readOnly) {
         data.canvas.addListener("statereadychange", initSession);
@@ -84,7 +88,6 @@ angular.module("webodf.factory", [])
         $scope.loaded = true;
         data.canvas.load(data.loadUrl);
       }
-      console.log(e);
     }
 
     return function() {
