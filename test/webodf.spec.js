@@ -15,13 +15,13 @@ describe("WebODF directive", function() {
   it("should create the intermediate div element which holds the webodf canvas", function() {
     var element = compile("<webodf></webodf>")(scope);
     scope.$digest();
-    expect(element.html()).toContain("<odfcanvas class=\"canvas\" id=\"\"></odfcanvas>");
+    expect(element.html()).toContain("<div class=\"canvas\" id=\"\"></div>");
   });
 
   it("should have a canvas with correct name", function() {
     var element = compile("<webodf name='odf'></webodf>")(scope);
     scope.$digest();
-    expect(element.html()).toContain("<odfcanvas class=\"canvas\" id=\"odf\"></odfcanvas>");
+    expect(element.html()).toContain("<div class=\"canvas\" id=\"odf\"></div>");
   });
 
   it("should open the test.odt", function() {
