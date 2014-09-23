@@ -66,7 +66,7 @@ angular.module("webodf.factory", [])
       canvas = angular.element(element.find("canvas"))[0];
       if (!e) return;
 
-      ruler = new Ruler("ruler");
+      ruler = new Ruler(canvas);
       e.addEventListener("resize", function() {
         element[0].width = e.clientWidth;
         element[0].height = e.clientHeight;
