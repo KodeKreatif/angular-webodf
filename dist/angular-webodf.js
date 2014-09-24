@@ -127,18 +127,114 @@ var Ruler;
 
 }());
 
+var ToolbarButtonsCtrl = function($scope, Canvas) {
+  var self = this;
+  self.formattingCtrl = null;
+
+  self.tools = [
+    { type: "toggle-button", name: "bold", className: "fa-bold", active: false, functionName: "setBold", check: "isBold" } ,
+    { type: "toggle-button", name: "italic", className: "fa-italic", active: false, functionName: "setItalic", check: "isItalic" } ,
+    { type: "toggle-button", name: "underline", className: "fa-underline", active: false, functionName: "setHasUnderline", check: "hasUnderline" } ,
+    { type: "button", name: "strikethrough", className: "fa-strikethrough", active: false, functionName: "setHasStrikeThrough", check: "hasStrikeThrough" } ,
+    { type: "button", name: "indent", className: "fa-indent", active: false, functionName: "indent"} ,
+    { type: "button", name: "outdent", className: "fa-outdent", active: false, functionName: "outdent"} ,
+    { type: "radio-button", group: "paragraph", name: "paragraphLeft", className: "fa-align-left", active: false, functionName: "alignParagraphLeft", check: "isAlignedLeft" } ,
+    { type: "radio-button", group: "paragraph", name: "paragraphCenter", className: "fa-align-center", active: false, functionName: "alignParagraphCenter", check: "isAlignedCenter" } ,
+    { type: "radio-button", group: "paragraph", name: "paragraphRight", className: "fa-align-right", active: false, functionName: "alignParagraphRight", check: "isAlignedRight" } ,
+    { type: "radio-button", group: "paragraph", name: "paragraphJustify", className: "fa-align-justify", active: false, functionName: "alignParagraphJustified", check: "isAlignedJustified" } ,
+  ];
+
+  // Creates a hash map for a quick lookup
+  self.toolsMap = {};
+  for (var i = 0; i < self.tools.length; i ++) {
+    self.toolsMap[self.tools[i].name] = self.tools[i];
+    self.updateVisual(self.tools[i]);
+  }
+
+  var textStylingChanged = function(arg) {
+    // update button styling
+    for (var i = 0; i < self.tools.length; i ++) {
+      var b = self.tools[i];
+      var check = b.check;
+      if (b.type == "toggle-button") {
+        b.active = (arg[check] ? true : false);
+      }
+      self.updateVisual(b);
+    }
+  }
+
+  Canvas().initFormattingController(function(ctrl) {
+    self.formattingCtrl = ctrl;
+    // This is called by the canvas upon successful loading
+    ctrl.subscribe(gui.DirectFormattingController.textStylingChanged, function(arg) {
+      $scope.$apply(function() {
+        textStylingChanged(arg);
+      });
+    });
+  });
+
+  $scope.buttons = self.tools;
+
+  $scope.click = function(button) {
+    self.click(button);
+    Canvas().data.sessionController.getEventManager().focus();
+  }
+};
+
+// Update css class of a button
+ToolbarButtonsCtrl.prototype.updateVisual = function(button) {
+  var self = this;
+  if (button.type == "toggle-button") {
+    button.class = (button.active ? "active" : "") + " fa " + button.className;
+  } else {
+    button.class = "fa " + button.className;
+  }
+};
+
+// Updates active state of a button
+ToolbarButtonsCtrl.prototype.updateState = function(button) {
+  var self = this;
+
+  var f = button.functionName;
+  if (f) {
+    self.formattingCtrl[f](button.active);
+  }
+};
+
+// Clicks
+ToolbarButtonsCtrl.prototype.click = function(button) {
+  var self = this;
+  button.active = !button.active;
+  this.updateVisual(button);
+  this.updateState(button);
+};
+
+ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
+
 angular.module("webodf.controller", [])
+.controller("ToolbarButtonsCtrl", ToolbarButtonsCtrl)
 .controller("CanvasCtrl", [ 
   "$scope", "$timeout", "Canvas", "$element",
   function($scope, $timeout, Canvas, $element) {
     $scope.loaded = false;
     addEventListener("load", function() {
-      Canvas().init($scope, $element);
+      Canvas().init($element);
     }, false);
   }
 ])
 
 angular.module("webodf.directive", ["webodf.factory"])
+.directive("tb", 
+  function() {
+    console.log("D");
+    return {
+      restrict: "E",
+      controller: "ToolbarButtonsCtrl",
+      template: "<style>.webodf-tb-button.active:hover {background: #ddd} .webodf-tb-button:hover {background: #ccc} .webodf-tb-button { text-align: center;vertical-align: middle;width: 50px; line-height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.active { background: #aaa} </style><span class='webodf-tb-button' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
+    }
+  }
+)
+
 .directive("webodf", [
   "Canvas", 
   function(Canvas) {
@@ -148,7 +244,6 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.memberId = attrs.user || "localuser";
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
-      $scope.id = attrs.id;
       $scope.ruler = attrs.ruler == "yes";
       Canvas().data.ruler = $scope.ruler;
     };
@@ -158,9 +253,9 @@ angular.module("webodf.directive", ["webodf.factory"])
       link: link,
       controller: "CanvasCtrl",
       scope: {
-        id: "@name"
+        name: "@name"
       },
-      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { position: absolute; top: 0px; left:0 px; min-height: 100px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 10px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{id}}'></div>"
+      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0 px; min-height: 50px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{name}}'></div>"
     }
   }
 ]);
@@ -169,8 +264,10 @@ angular.module("webodf.factory", [])
 .factory("Canvas", [
   "$window",
   function($window) {
-    var data = {};
-    var $scope;
+    var initFormattingController;
+
+    var data = {
+    };
     var canvas;
     var ruler;
     var toolbar;
@@ -188,10 +285,11 @@ angular.module("webodf.factory", [])
       var doc = data.session.getOdtDocument();
       var cursor = new gui.ShadowCursor(doc);
       data.sessionController = new gui.SessionController(data.session, data.memberId, cursor, {
-        annotationsEnabled: true,
+        annotationsEnabled: false,
         directTextStylingEnabled: true, 
         directParagraphStylingEnabled: true
       });
+      data.formattingController = data.sessionController.getDirectFormattingController();
 
       var viewOptions = {
         editInfoMarkersInitiallyVisible: false,
@@ -221,16 +319,18 @@ angular.module("webodf.factory", [])
 
       data.sessionController.insertLocalCursor();
       data.sessionController.startEditing();
-      $scope.editable = true;
 
       canvas.width = webOdfCanvas.clientWidth + 1;
+      toolbar.width = webOdfCanvas.clientWidth;
       canvas.height = 15;
       ruler.render("#aaa", "cm", 100);
+
+      if (initFormattingController) {
+        initFormattingController(data.formattingController);
+      }
     }
 
-    var init = function(scope, element) {
-      $scope = scope;
-      $scope.data = data;
+    var init = function(element) {
       var list = element.find("div");
       webOdfCanvas = angular.element(list)[1];
       toolbar = angular.element(list)[0];
@@ -242,25 +342,28 @@ angular.module("webodf.factory", [])
         element[0].width = webOdfCanvas.clientWidth;
         element[0].height = webOdfCanvas.clientHeight;
         canvas.width = webOdfCanvas.clientWidth + 1;
+        toolbar.width = webOdfCanvas.clientWidth;
+        
         canvas.height = 15;
         ruler.render("#aaa", "cm", 100);
       });
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
-      $scope.editable = false;
       if (!data.readOnly) {
         data.canvas.addListener("statereadychange", initSession);
       }
 
       if (data.loadUrl) {
-        $scope.loaded = true;
         data.canvas.load(data.loadUrl);
       }
     }
 
     return function() {
       return {
-      init: init,
-      data: data
+        init: init,
+        data: data,
+        initFormattingController: function(set) {
+          initFormattingController = set;
+        }
       }
     }
   }
