@@ -5,7 +5,7 @@ angular.module("webodf.directive", ["webodf.factory"])
     return {
       restrict: "E",
       controller: "ToolbarButtonsCtrl",
-      template: "<style>.webodf-tb-button { width: 50px; height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.active { background: #aaa} </style><span class='webodf-tb-button' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
+      template: "<style>.webodf-tb-button.active:hover {background: #ddd} .webodf-tb-button:hover {background: #ccc} .webodf-tb-button { text-align: center;vertical-align: middle;width: 50px; line-height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.active { background: #aaa} </style><span class='webodf-tb-button' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
     }
   }
 )
