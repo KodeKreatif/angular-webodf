@@ -3,6 +3,8 @@ var concat  = require("gulp-concat");
 var shell = require("gulp-shell");
 var files = require("./files");
 var karma = require("karma").server;
+var less = require("gulp-less");
+var replace = require("gulp-replace");
 
 var webodfVersion = "0.5.4";
 
@@ -20,10 +22,27 @@ gulp.task("rulers", shell.task([
 gulp.task("clean", function() {
   return shell.task([
       "rm -f ./demo/libs.js",
+      "rm -f ./demo/fonts",
       "rm -f ./demo/angular-webodf.js",
       "rm -rf ./dist"
   ])
 })
+
+gulp.task("fa-less", function() {
+  return gulp.src(files["fa-less"])
+  .pipe(concat("fa.less"))
+  .pipe(replace("@fa-font-path:        \"../fonts\";", "@fa-font-path: './fonts';"))
+  .pipe(less())
+  .pipe(gulp.dest("./dist/"))
+});
+
+gulp.task("fa-fonts", function() {
+  return gulp.src(files["fa-fonts"])
+  .pipe(gulp.dest("./dist/fonts"))
+});
+
+gulp.task("fa", ["fa-less", "fa-fonts"], function() {
+});
 
 gulp.task("src", ["rulers"],function() {
   return gulp.src(files.src)
@@ -43,9 +62,12 @@ gulp.task("demo-libs", function() {
   .pipe(gulp.dest("./demo/"))
 });
 
-gulp.task("demo", ["clean", "webodf", "demo-styles", "demo-libs", "src"], function() {
+gulp.task("demo", ["clean", "webodf", "fa", "demo-styles", "demo-libs", "src"], function() {
   gulp.src("./dist/angular-webodf.js")
   .pipe(gulp.dest("./demo/"))
+
+  gulp.src("./dist/fonts/*")
+  .pipe(gulp.dest("./demo/fonts"))
 });
 
 

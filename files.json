@@ -5,7 +5,14 @@
     "vendor/modernizr/modernizr.js"
   ],
   "demo-styles": [
-    "vendor/foundation/css/foundation.css"
+    "vendor/foundation/css/foundation.css",
+    "dist/fa.css"
+  ],
+  "fa-less": [
+    "vendor/font-awesome/less/**.less"
+  ],
+  "fa-fonts": [
+    "vendor/font-awesome/fonts/*"
   ],
   "src": [
     "vendor/Rulers/rulers.js",
