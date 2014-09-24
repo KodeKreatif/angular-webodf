@@ -36,4 +36,18 @@ describe("WebODF directive", function() {
     dispatchEvent(new Event("load"));
   });
 
+  it("should open the test.odt and get the byte array", function(done) {
+    var element = compile("<webodf url='/base/test/test.zip' name='odf'></webodf>")(scope);
+    scope.$digest();
+    scope.$on("load-done", function() {
+      scope.getByteArray(function(err, data) {
+        expect(err).toBeNull();
+        expect(data.length).toBeGreaterThan(100000);
+        done();
+      });
+    });
+    dispatchEvent(new Event("load"));
+  });
+
+
 });

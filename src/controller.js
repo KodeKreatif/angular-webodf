@@ -85,7 +85,7 @@ ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
 var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
   var self = this;
 
-  self.canvas = Canvas;
+  self.canvas = Canvas();
   $scope.loaded = false;
   addEventListener("load", function() {
     Canvas().init($element);
@@ -106,7 +106,7 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
 CanvasCtrl.prototype.getByteArray = function(cb) {
   var self = this;
 
-  var container = Canvas().data.canvas.odfContainer();
+  var container = self.canvas.data.canvas.odfContainer();
   if (container) {
     container.createByteArray(function(data) {
       cb(null, data);
