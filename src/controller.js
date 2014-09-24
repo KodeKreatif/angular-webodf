@@ -3,8 +3,10 @@ var ToolbarButtonsCtrl = function($scope, Canvas) {
   self.formattingCtrl = null;
 
   self.tools = [
-  { type: "button", name: "bold", className: "fa-bold", active: false, functionName: "setBold", check: "isBold" } ,
-  { type: "button", name: "italic", className: "fa-italic", active: false, functionName: "setItalic", check: "isItalic" } ,
+    { type: "button", name: "bold", className: "fa-bold", active: false, functionName: "setBold", check: "isBold" } ,
+    { type: "button", name: "italic", className: "fa-italic", active: false, functionName: "setItalic", check: "isItalic" } ,
+    { type: "button", name: "underline", className: "fa-underline", active: false, functionName: "setHasUnderline", check: "hasUnderline" } ,
+    { type: "button", name: "strikethrough", className: "fa-strikethrough", active: false, functionName: "setHasStrikeThrough", check: "hasStrikeThrough" } ,
   ];
 
   // Creates a hash map for a quick lookup
