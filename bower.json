@@ -18,5 +18,8 @@
     "angular": "~1.2.25",
     "angular-mocks": "~1.2.25",
     "foundation": "~5.4.4"
+  },
+  "dependencies": {
+    "font-awesome": "~4.2.0"
   }
 }
