@@ -2,8 +2,10 @@ angular.module("webodf.factory", [])
 .factory("Canvas", [
   "$window",
   function($window) {
-    var data = {};
-    var $scope;
+    var initFormattingController;
+
+    var data = {
+    };
     var canvas;
     var ruler;
     var toolbar;
@@ -21,10 +23,11 @@ angular.module("webodf.factory", [])
       var doc = data.session.getOdtDocument();
       var cursor = new gui.ShadowCursor(doc);
       data.sessionController = new gui.SessionController(data.session, data.memberId, cursor, {
-        annotationsEnabled: true,
+        annotationsEnabled: false,
         directTextStylingEnabled: true, 
         directParagraphStylingEnabled: true
       });
+      data.formattingController = data.sessionController.getDirectFormattingController();
 
       var viewOptions = {
         editInfoMarkersInitiallyVisible: false,
@@ -54,16 +57,18 @@ angular.module("webodf.factory", [])
 
       data.sessionController.insertLocalCursor();
       data.sessionController.startEditing();
-      $scope.editable = true;
 
       canvas.width = webOdfCanvas.clientWidth + 1;
+      toolbar.width = webOdfCanvas.clientWidth;
       canvas.height = 15;
       ruler.render("#aaa", "cm", 100);
+
+      if (initFormattingController) {
+        initFormattingController(data.formattingController);
+      }
     }
 
-    var init = function(scope, element) {
-      $scope = scope;
-      $scope.data = data;
+    var init = function(element) {
       var list = element.find("div");
       webOdfCanvas = angular.element(list)[1];
       toolbar = angular.element(list)[0];
@@ -75,25 +80,28 @@ angular.module("webodf.factory", [])
         element[0].width = webOdfCanvas.clientWidth;
         element[0].height = webOdfCanvas.clientHeight;
         canvas.width = webOdfCanvas.clientWidth + 1;
+        toolbar.width = webOdfCanvas.clientWidth;
+        
         canvas.height = 15;
         ruler.render("#aaa", "cm", 100);
       });
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
-      $scope.editable = false;
       if (!data.readOnly) {
         data.canvas.addListener("statereadychange", initSession);
       }
 
       if (data.loadUrl) {
-        $scope.loaded = true;
         data.canvas.load(data.loadUrl);
       }
     }
 
     return function() {
       return {
-      init: init,
-      data: data
+        init: init,
+        data: data,
+        initFormattingController: function(set) {
+          initFormattingController = set;
+        }
       }
     }
   }

@@ -1,4 +1,15 @@
 angular.module("webodf.directive", ["webodf.factory"])
+.directive("tb", 
+  function() {
+    console.log("D");
+    return {
+      restrict: "E",
+      controller: "ToolbarButtonsCtrl",
+      template: "<style>.webodf-tb-button { width: 50px; height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.active { background: #aaa} </style><span class='webodf-tb-button' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
+    }
+  }
+)
+
 .directive("webodf", [
   "Canvas", 
   function(Canvas) {
@@ -8,7 +19,6 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.memberId = attrs.user || "localuser";
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
-      $scope.id = attrs.id;
       $scope.ruler = attrs.ruler == "yes";
       Canvas().data.ruler = $scope.ruler;
     };
@@ -18,9 +28,9 @@ angular.module("webodf.directive", ["webodf.factory"])
       link: link,
       controller: "CanvasCtrl",
       scope: {
-        id: "@name"
+        name: "@name"
       },
-      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { position: absolute; top: 0px; left:0 px; min-height: 100px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 10px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{id}}'></div>"
+      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0 px; min-height: 50px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{name}}'></div>"
     }
   }
 ]);

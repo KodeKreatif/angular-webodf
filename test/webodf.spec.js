@@ -30,6 +30,4 @@ describe("WebODF directive", function() {
     dispatchEvent(new Event("load"));
     expect(scope.$$childTail.loaded).toBeTruthy();
   });
-
-
 });
