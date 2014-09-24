@@ -20,6 +20,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
       $scope.ruler = attrs.ruler == "yes";
+      $scope.name = attrs.name;
       Canvas().data.ruler = $scope.ruler;
     };
 
@@ -27,9 +28,6 @@ angular.module("webodf.directive", ["webodf.factory"])
       restrict: "E",
       link: link,
       controller: "CanvasCtrl",
-      scope: {
-        name: "@name"
-      },
       template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0 px; min-height: 50px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{name}}'></div>"
     }
   }

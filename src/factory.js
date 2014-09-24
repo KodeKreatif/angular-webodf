@@ -63,8 +63,12 @@ angular.module("webodf.factory", [])
       canvas.height = 15;
       ruler.render("#aaa", "cm", 100);
 
+      data.loaded = true;
       if (initFormattingController) {
         initFormattingController(data.formattingController);
+      }
+      if (loadDone) {
+        loadDone();
       }
     }
 
@@ -88,10 +92,13 @@ angular.module("webodf.factory", [])
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
       if (!data.readOnly) {
         data.canvas.addListener("statereadychange", initSession);
-      }
+      } 
 
       if (data.loadUrl) {
         data.canvas.load(data.loadUrl);
+        if (data.readOnly && loadDone) {
+          loadDone();
+        }
       }
     }
 
@@ -101,6 +108,9 @@ angular.module("webodf.factory", [])
         data: data,
         initFormattingController: function(set) {
           initFormattingController = set;
+        },
+        loadDone: function(set) {
+          loadDone = set;
         }
       }
     }

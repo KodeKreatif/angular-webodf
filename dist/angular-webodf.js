@@ -211,17 +211,48 @@ ToolbarButtonsCtrl.prototype.click = function(button) {
 
 ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
 
+var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
+  var self = this;
+
+  self.canvas = Canvas;
+  $scope.loaded = false;
+  addEventListener("load", function() {
+    Canvas().init($element);
+    Canvas().loadDone(function() {
+      $scope.$broadcast("load-done");
+    });
+  }, false);
+
+  $scope.getByteArray = function(cb) {
+    self.getByteArray(cb);
+  };
+
+  $scope.isLoaded = function() {
+    console.log("x");
+    Canvas().data.loaded;
+  };
+}
+
+CanvasCtrl.prototype.getByteArray = function(cb) {
+  var self = this;
+
+  var container = Canvas().data.canvas.odfContainer();
+  if (container) {
+    container.createByteArray(function(data) {
+      cb(null, data);
+    }, function(err) {
+      cb(new Error(err || "No data"));
+    });
+  } else {
+    cb(new Error("No container"));
+  }
+}
+
+CanvasCtrl.$inject = ["$scope", "$timeout", "Canvas", "$element"];
+
 angular.module("webodf.controller", [])
 .controller("ToolbarButtonsCtrl", ToolbarButtonsCtrl)
-.controller("CanvasCtrl", [ 
-  "$scope", "$timeout", "Canvas", "$element",
-  function($scope, $timeout, Canvas, $element) {
-    $scope.loaded = false;
-    addEventListener("load", function() {
-      Canvas().init($element);
-    }, false);
-  }
-])
+.controller("CanvasCtrl", CanvasCtrl)
 
 angular.module("webodf.directive", ["webodf.factory"])
 .directive("tb", 
@@ -245,6 +276,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
       $scope.ruler = attrs.ruler == "yes";
+      $scope.name = attrs.name;
       Canvas().data.ruler = $scope.ruler;
     };
 
@@ -252,9 +284,6 @@ angular.module("webodf.directive", ["webodf.factory"])
       restrict: "E",
       link: link,
       controller: "CanvasCtrl",
-      scope: {
-        name: "@name"
-      },
       template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0 px; min-height: 50px;width: auto; background: #eee; } canvas.ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.canvas {border: 1px solid #aaa;overflow: hidden; position: absolute;top: 0px; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='ruler' id='ruler'></canvas><div class='canvas' id='{{name}}'></div>"
     }
   }
@@ -325,8 +354,12 @@ angular.module("webodf.factory", [])
       canvas.height = 15;
       ruler.render("#aaa", "cm", 100);
 
+      data.loaded = true;
       if (initFormattingController) {
         initFormattingController(data.formattingController);
+      }
+      if (loadDone) {
+        loadDone();
       }
     }
 
@@ -350,10 +383,13 @@ angular.module("webodf.factory", [])
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
       if (!data.readOnly) {
         data.canvas.addListener("statereadychange", initSession);
-      }
+      } 
 
       if (data.loadUrl) {
         data.canvas.load(data.loadUrl);
+        if (data.readOnly && loadDone) {
+          loadDone();
+        }
       }
     }
 
@@ -363,6 +399,9 @@ angular.module("webodf.factory", [])
         data: data,
         initFormattingController: function(set) {
           initFormattingController = set;
+        },
+        loadDone: function(set) {
+          loadDone = set;
         }
       }
     }

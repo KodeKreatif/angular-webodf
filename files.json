@@ -1,7 +1,7 @@
 {
   "demo-libs": [
     "vendor/angular/angular.js",
-    "vendor/webodf/webodf.js",
+    "vendor/webodf/webodf.js-0.5.4/webodf-debug.js",
     "vendor/modernizr/modernizr.js"
   ],
   "demo-styles": [

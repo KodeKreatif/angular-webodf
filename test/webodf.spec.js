@@ -2,10 +2,12 @@ describe("WebODF directive", function() {
   var compile;
   var scope;
   var controller;
+  var w;
 
   beforeEach(module("ngWebODF"));
 
-  beforeEach(inject(function($compile, $rootScope, $controller){
+  beforeEach(inject(function($compile, $rootScope, $controller, $window){
+    w= $window;
     compile = $compile;
     scope = $rootScope.$new();
     controller = $controller;
@@ -24,10 +26,14 @@ describe("WebODF directive", function() {
     expect(element.html()).toContain("<div class=\"canvas\" id=\"odf\"></div>");
   });
 
-  it("should open the test.odt", function() {
-    var element = compile("<webodf url='/base/test/test.odt' name='odf'></webodf>")(scope);
+  it("should open the test.odt", function(done) {
+    var element = compile("<webodf url='/base/test/test.zip' name='odf'></webodf>")(scope);
     scope.$digest();
+    scope.$on("load-done", function() {
+      expect(scope.isLoaded()).toBeTruthy();
+      done();
+    });
     dispatchEvent(new Event("load"));
-    expect(scope.$$childTail.loaded).toBeTruthy();
   });
+
 });

@@ -82,14 +82,44 @@ ToolbarButtonsCtrl.prototype.click = function(button) {
 
 ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
 
+var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
+  var self = this;
+
+  self.canvas = Canvas;
+  $scope.loaded = false;
+  addEventListener("load", function() {
+    Canvas().init($element);
+    Canvas().loadDone(function() {
+      $scope.$broadcast("load-done");
+    });
+  }, false);
+
+  $scope.getByteArray = function(cb) {
+    self.getByteArray(cb);
+  };
+
+  $scope.isLoaded = function() {
+    return Canvas().data.loaded;
+  };
+}
+
+CanvasCtrl.prototype.getByteArray = function(cb) {
+  var self = this;
+
+  var container = Canvas().data.canvas.odfContainer();
+  if (container) {
+    container.createByteArray(function(data) {
+      cb(null, data);
+    }, function(err) {
+      cb(new Error(err || "No data"));
+    });
+  } else {
+    cb(new Error("No container"));
+  }
+}
+
+CanvasCtrl.$inject = ["$scope", "$timeout", "Canvas", "$element"];
+
 angular.module("webodf.controller", [])
 .controller("ToolbarButtonsCtrl", ToolbarButtonsCtrl)
-.controller("CanvasCtrl", [ 
-  "$scope", "$timeout", "Canvas", "$element",
-  function($scope, $timeout, Canvas, $element) {
-    $scope.loaded = false;
-    addEventListener("load", function() {
-      Canvas().init($element);
-    }, false);
-  }
-])
+.controller("CanvasCtrl", CanvasCtrl)
