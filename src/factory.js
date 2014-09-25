@@ -90,7 +90,6 @@ angular.module("webodf.factory", [])
           break;
         }
       }
-      console.log("p", webOdfCanvas.clientWidth);
       toolbar = angular.element(list)[0];
       canvas = angular.element(element.find("canvas"))[0];
       if (!webOdfCanvas) return;
