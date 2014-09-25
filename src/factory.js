@@ -72,12 +72,14 @@ angular.module("webodf.factory", [])
     var updateGeometry = function() {
       setTimeout(function() {
         // Queue for the next tick
-        container.width = webOdfCanvas.clientWidth;
-        container.height = webOdfCanvas.clientHeight;
-        canvas.width = webOdfCanvas.clientWidth;
+        var width = webOdfCanvas.clientWidth;
+        w=webOdfCanvas;
+        canvas.width = width;
         canvas.height = 15;
-        toolbar.style.width = webOdfCanvas.clientWidth + "px";
+        toolbar.style.width = width + "px";
         webOdfCanvas.style.top = (canvas.clientHeight + toolbar.clientHeight) + "px";
+        container.style.width = width + "px";
+        container.style.height = (webOdfCanvas.style.top + webOdfCanvas.clientHeight) + "px";
         if (canvas.width != 0)
           ruler.render("#aaa", "cm", 100);
       }, 0);

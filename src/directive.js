@@ -28,7 +28,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       restrict: "E",
       link: link,
       controller: "CanvasCtrl",
-      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0px; min-height: 50px;width: auto; background: #eee; } canvas.webodf-ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.webodf-canvas {border: 1px solid #aaa;overflow: hidden; position: absolute; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='webodf-ruler' id='ruler'></canvas><div class='webodf-canvas' id='{{name}}'></div>"
+      template: "<style>webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0px; min-height: 50px;width: auto; background: #eee; } canvas.webodf-ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.webodf-canvas {background: #eee;overflow: hidden; position: absolute; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='webodf-ruler' id='ruler'></canvas><div class='webodf-canvas' id='{{name}}'></div>"
     }
   }
 ]);
