@@ -56,7 +56,7 @@ var ToolbarButtonsCtrl = function($scope, Canvas) {
 ToolbarButtonsCtrl.prototype.updateVisual = function(button) {
   var self = this;
   if (button.type == "toggle-button") {
-    button.class = (button.active ? "active" : "") + " fa " + button.className;
+    button.class = (button.active ? "webodf-tb-button-active" : "") + " fa " + button.className;
   } else {
     button.class = "fa " + button.className;
   }
@@ -100,6 +100,10 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
 
   $scope.isLoaded = function() {
     return Canvas().data.loaded;
+  };
+
+  $scope.updateGeometry = function() {
+    Canvas().updateGeometry();
   };
 }
 

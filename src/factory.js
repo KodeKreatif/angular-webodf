@@ -10,6 +10,7 @@ angular.module("webodf.factory", [])
     var ruler;
     var toolbar;
     var webOdfCanvas;
+    var container;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -58,11 +59,6 @@ angular.module("webodf.factory", [])
       data.sessionController.insertLocalCursor();
       data.sessionController.startEditing();
 
-      canvas.width = webOdfCanvas.clientWidth + 1;
-      toolbar.width = webOdfCanvas.clientWidth;
-      canvas.height = 15;
-      ruler.render("#aaa", "cm", 100);
-
       data.loaded = true;
       if (initFormattingController) {
         initFormattingController(data.formattingController);
@@ -70,24 +66,38 @@ angular.module("webodf.factory", [])
       if (loadDone) {
         loadDone();
       }
+      updateGeometry();
     }
+
+    var updateGeometry = function() {
+      container.width = webOdfCanvas.clientWidth;
+      container.height = webOdfCanvas.clientHeight;
+      canvas.width = webOdfCanvas.clientWidth;
+      canvas.height = 15;
+      toolbar.style.width = webOdfCanvas.clientWidth + "px";
+      webOdfCanvas.style.top = (canvas.clientHeight + toolbar.clientHeight) + "px";
+      if (canvas.width != 0)
+      ruler.render("#aaa", "cm", 100);
+    }
+
 
     var init = function(element) {
       var list = element.find("div");
-      webOdfCanvas = angular.element(list)[1];
+      container = element[0];
+      for (var i = 0; i < list.length; i ++) {
+        if (list[i].className && list[i].className.indexOf("webodf-canvas") >= 0) {
+          webOdfCanvas = list[i];
+          break;
+        }
+      }
+      console.log("p", webOdfCanvas.clientWidth);
       toolbar = angular.element(list)[0];
       canvas = angular.element(element.find("canvas"))[0];
       if (!webOdfCanvas) return;
 
       ruler = new Ruler(canvas);
       webOdfCanvas.addEventListener("resize", function() {
-        element[0].width = webOdfCanvas.clientWidth;
-        element[0].height = webOdfCanvas.clientHeight;
-        canvas.width = webOdfCanvas.clientWidth + 1;
-        toolbar.width = webOdfCanvas.clientWidth;
-        
-        canvas.height = 15;
-        ruler.render("#aaa", "cm", 100);
+        updateGeometry();
       });
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
       if (!data.readOnly) {
@@ -111,7 +121,8 @@ angular.module("webodf.factory", [])
         },
         loadDone: function(set) {
           loadDone = set;
-        }
+        },
+        updateGeometry: updateGeometry
       }
     }
   }
