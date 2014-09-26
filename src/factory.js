@@ -14,6 +14,7 @@ angular.module("webodf.factory", [])
     var session;
     var sessionController;
     var odfDocument;
+    var loadDone;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -78,15 +79,28 @@ angular.module("webodf.factory", [])
         // Queue for the next tick
         var width = webOdfCanvas.clientWidth;
         w=webOdfCanvas;
-        rulerCanvas.width = width;
-        rulerCanvas.height = 15;
-        toolbar.style.width = width + "px";
-        webOdfCanvas.style.top = (rulerCanvas.clientHeight + toolbar.clientHeight) + "px";
+        if (!data.readOnly) {
+          rulerCanvas.width = width;
+          rulerCanvas.height = 15;
+          toolbar.style.width = width + "px";
+          webOdfCanvas.style.top = (rulerCanvas.clientHeight + toolbar.clientHeight) + "px";
+        } else {
+          webOdfCanvas.style.top = "0"; 
+          rulerCanvas.width = 0;
+        }
         container.style.width = width + "px";
-        container.style.height = (webOdfCanvas.style.top + webOdfCanvas.clientHeight) + "px";
+        container.style.height = (
+            parseInt(webOdfCanvas.style.top) 
+            + (parseInt(webOdfCanvas.style.borderTopWidth) || 0)
+            + (parseInt(webOdfCanvas.style.borderBottomWidth) || 0) 
+            + (parseInt(webOdfCanvas.style.paddingTop) || 0)
+            + (parseInt(webOdfCanvas.style.paddingBottom) || 0) 
+            + webOdfCanvas.clientHeight
+            + 1
+          ) + "px";
         if (rulerCanvas.width != 0)
           ruler.render("#aaa", "cm", 100);
-      }, 0);
+      }, 1000);
     }
 
 
@@ -116,8 +130,11 @@ angular.module("webodf.factory", [])
 
       if (data.loadUrl) {
         data.canvas.load(data.loadUrl);
-        if (data.readOnly && loadDone) {
-          loadDone();
+        if (data.readOnly) {
+          updateGeometry();
+          if (loadDone) {
+            loadDone();
+          }
         }
       }
     }

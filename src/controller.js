@@ -85,6 +85,8 @@ ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
 var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
   var self = this;
   var dirty = false;
+  var checkingGeometry = false;
+  var lastGeometryCheck = new Date;
 
   self.canvas = Canvas();
   $scope.loaded = false;
@@ -95,6 +97,20 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
       Canvas().odfDocument.subscribe(ops.OdtDocument.signalUndoStackChanged, function(e) {
         dirty = true;
         $scope.$broadcast(ops.OdtDocument.signalUndoStackChanged, e);
+        setTimeout(function() {
+          if (checkingGeometry) {
+            return;
+          }
+          var d = new Date;
+          if (d - lastGeometryCheck < 1000) {
+            return;
+          }
+
+          checkingGeometry = true;
+          $scope.updateGeometry();
+          checkingGeometry = false;
+          lastGeometryCheck = new Date;
+        }, 1000);
       });
     });
   }, false);
