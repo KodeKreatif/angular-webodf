@@ -11,6 +11,8 @@ angular.module("webodf.factory", [])
     var toolbar;
     var webOdfCanvas;
     var container;
+    var session;
+    var sessionController;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -18,30 +20,30 @@ angular.module("webodf.factory", [])
     ]);
 
     var initSession = function(container) {
-      if (data.session) return;
+      if (session) return;
 
-      data.session = new ops.Session(data.canvas);
-      var doc = data.session.getOdtDocument();
+      session = new ops.Session(data.canvas);
+      var doc = session.getOdtDocument();
       var cursor = new gui.ShadowCursor(doc);
-      data.sessionController = new gui.SessionController(data.session, data.memberId, cursor, {
+      sessionController = new gui.SessionController(session, data.memberId, cursor, {
         annotationsEnabled: false,
         directTextStylingEnabled: true, 
         directParagraphStylingEnabled: true
       });
-      data.formattingController = data.sessionController.getDirectFormattingController();
+      data.formattingController = sessionController.getDirectFormattingController();
 
       var viewOptions = {
         editInfoMarkersInitiallyVisible: false,
         caretAvatarsInitiallyVisible: false,
         caretBlinksOnRangeSelect: true
       };
-      var caretManager = new gui.CaretManager(data.sessionController, data.canvas.getViewport());
+      var caretManager = new gui.CaretManager(sessionController, data.canvas.getViewport());
       var selectionViewManager = new gui.SelectionViewManager(gui.SvgSelectionView);
-      var sessionConstraints = data.sessionController.getSessionConstraints();
-      data.sessionView = new gui.SessionView(viewOptions, data.memberId, data.session, sessionConstraints, caretManager, selectionViewManager);
+      var sessionConstraints = sessionController.getSessionConstraints();
+      data.sessionView = new gui.SessionView(viewOptions, data.memberId, session, sessionConstraints, caretManager, selectionViewManager);
       selectionViewManager.registerCursor(cursor, true);
 
-      data.sessionController.getMetadataController().subscribe(gui.MetadataController.signalMetadataChanged, function(changes) {
+      sessionController.getMetadataController().subscribe(gui.MetadataController.signalMetadataChanged, function(changes) {
         eventNotifier.emit("metadataChanged", changes);
       });
 
@@ -54,10 +56,10 @@ angular.module("webodf.factory", [])
           imageUrl: ""
         }
       });
-      data.session.enqueue([op]);
+      session.enqueue([op]);
 
-      data.sessionController.insertLocalCursor();
-      data.sessionController.startEditing();
+      sessionController.insertLocalCursor();
+      sessionController.startEditing();
 
       data.loaded = true;
       if (initFormattingController) {
@@ -140,7 +142,9 @@ angular.module("webodf.factory", [])
           loadDone = set;
         },
         updateGeometry: updateGeometry,
-        getByteArray: getByteArray
+        getByteArray: getByteArray,
+        session: session,
+        sessionController: sessionController
       }
     }
   }

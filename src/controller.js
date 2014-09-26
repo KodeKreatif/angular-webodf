@@ -48,7 +48,7 @@ var ToolbarButtonsCtrl = function($scope, Canvas) {
 
   $scope.click = function(button) {
     self.click(button);
-    Canvas().data.sessionController.getEventManager().focus();
+    Canvas().sessionController.getEventManager().focus();
   }
 };
 
