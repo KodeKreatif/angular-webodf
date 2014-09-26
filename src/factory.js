@@ -13,6 +13,7 @@ angular.module("webodf.factory", [])
     var container;
     var session;
     var sessionController;
+    var odfDocument;
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
@@ -23,8 +24,8 @@ angular.module("webodf.factory", [])
       if (session) return;
 
       session = new ops.Session(data.canvas);
-      var doc = session.getOdtDocument();
-      var cursor = new gui.ShadowCursor(doc);
+      odfDocument = session.getOdtDocument();
+      var cursor = new gui.ShadowCursor(odfDocument);
       sessionController = new gui.SessionController(session, data.memberId, cursor, {
         annotationsEnabled: false,
         directTextStylingEnabled: true, 
@@ -144,7 +145,8 @@ angular.module("webodf.factory", [])
         updateGeometry: updateGeometry,
         getByteArray: getByteArray,
         session: session,
-        sessionController: sessionController
+        sessionController: sessionController,
+        odfDocument: odfDocument
       }
     }
   }
