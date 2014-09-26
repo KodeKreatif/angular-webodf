@@ -95,7 +95,7 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
   }, false);
 
   $scope.getByteArray = function(cb) {
-    self.getByteArray(cb);
+    Canvas().getByteArray(cb);
   };
 
   $scope.isLoaded = function() {
@@ -105,21 +105,6 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
   $scope.updateGeometry = function() {
     Canvas().updateGeometry();
   };
-}
-
-CanvasCtrl.prototype.getByteArray = function(cb) {
-  var self = this;
-
-  var container = self.canvas.data.canvas.odfContainer();
-  if (container) {
-    container.createByteArray(function(data) {
-      cb(null, data);
-    }, function(err) {
-      cb(new Error(err || "No data"));
-    });
-  } else {
-    cb(new Error("No container"));
-  }
 }
 
 CanvasCtrl.$inject = ["$scope", "$timeout", "Canvas", "$element"];

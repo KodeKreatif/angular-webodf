@@ -116,6 +116,19 @@ angular.module("webodf.factory", [])
       }
     }
 
+    var getByteArray = function(cb) {
+      var c = data.canvas.odfContainer();
+      if (c) {
+        c.createByteArray(function(data) {
+          cb(null, data);
+        }, function(err) {
+          cb(new Error(err || "No data"));
+        });
+      } else {
+        cb(new Error("No container"));
+      }
+    }
+
     return function() {
       return {
         init: init,
@@ -126,7 +139,8 @@ angular.module("webodf.factory", [])
         loadDone: function(set) {
           loadDone = set;
         },
-        updateGeometry: updateGeometry
+        updateGeometry: updateGeometry,
+        getByteArray: getByteArray
       }
     }
   }
