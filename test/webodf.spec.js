@@ -49,5 +49,28 @@ describe("WebODF directive", function() {
     dispatchEvent(new Event("load"));
   });
 
+  it("should recalculate geometry", function(done) {
+    var element = compile("<webodf style='width:500px' url='/base/test/test.zip' name='odf'></webodf>")(scope);
+    scope.$digest();
+    scope.$on("load-done", function() {
+      element[0].clientWidth = 1000;
+      scope.updateGeometry();
+      var list = element.find("div");
+      var toolbar;
+      for (var i = 0; i < list.length; i ++) {
+        if (list[i].className.indexOf("webodf-toolbar")) {
+          toolbar = list[i];
+        }
+      }
+
+      if (toolbar) {
+        console.log(toolbar.clientWidth);
+      }
+      done();
+    });
+    dispatchEvent(new Event("load"));
+  });
+
+
 
 });
