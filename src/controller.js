@@ -84,6 +84,7 @@ ToolbarButtonsCtrl.$inject = ["$scope", "Canvas"];
 
 var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
   var self = this;
+  var dirty = false;
 
   self.canvas = Canvas();
   $scope.loaded = false;
@@ -91,8 +92,16 @@ var CanvasCtrl = function($scope, $timeout, Canvas, $element) {
     Canvas().init($element);
     Canvas().loadDone(function() {
       $scope.$broadcast("load-done");
+      Canvas().odfDocument.subscribe(ops.OdtDocument.signalUndoStackChanged, function(e) {
+        dirty = true;
+        $scope.$broadcast(ops.OdtDocument.signalUndoStackChanged, e);
+      });
     });
   }, false);
+
+  $scope.dirty = function() {
+    return dirty;
+  };
 
   $scope.getByteArray = function(cb) {
     Canvas().getByteArray(cb);

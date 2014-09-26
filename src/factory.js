@@ -44,6 +44,7 @@ angular.module("webodf.factory", [])
       data.sessionView = new gui.SessionView(viewOptions, data.memberId, session, sessionConstraints, caretManager, selectionViewManager);
       selectionViewManager.registerCursor(cursor, true);
 
+      sessionController.setUndoManager(new gui.TrivialUndoManager());
       sessionController.getMetadataController().subscribe(gui.MetadataController.signalMetadataChanged, function(changes) {
         eventNotifier.emit("metadataChanged", changes);
       });
