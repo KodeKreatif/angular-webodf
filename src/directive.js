@@ -20,15 +20,20 @@ angular.module("webodf.directive", ["webodf.factory"])
       Canvas().data.loadUrl = attrs.url;
       Canvas().data.readOnly = (typeof(attrs.readonly) !== "undefined");
       $scope.ruler = attrs.ruler == "yes";
+      $scope.hasToolbar = true;
+      if (attrs.toolbar == "no" || Canvas().data.readOnly) {
+        $scope.hasToolbar = false;
+      }
       $scope.name = attrs.name;
       Canvas().data.ruler = $scope.ruler;
+      Canvas().data.hasToolbar = $scope.hasToolbar;
     };
 
     return {
       restrict: "E",
       link: link,
       controller: "CanvasCtrl",
-      template: "<style>document > body {border:1px solid #eee; background: #fff} webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0px; min-height: 50px;width: auto; background: #eee; } canvas.webodf-ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.webodf-canvas {background: #eee;overflow: hidden; position: absolute; left: 0px; z-index: 1} </style><div class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='webodf-ruler' id='ruler'></canvas><div class='webodf-canvas' id='{{name}}'></div>"
+      template: "<style>document > body {border:1px solid #eee; background: #fff} webodf { display:block;position: relative;padding:0px; } div.webodf-toolbar { z-index:101;position: absolute; top: 0px; left:0px; min-height: 50px;width: auto; background: #eee; } canvas.webodf-ruler { position:absolute; top: 50px; left: 0px; z-index: 10;background:transparent} div.webodf-canvas {background: #eee;overflow: hidden; position: absolute; left: 0px; z-index: 1} </style><div ng-show='hasToolbar' class='webodf-toolbar'><tb></tb></div> <canvas ng-show='ruler' class='webodf-ruler' id='ruler'></canvas><div class='webodf-canvas' id='{{name}}'></div>"
     }
   }
 ]);
