@@ -6,7 +6,7 @@ angular.module("webodf.factory", [])
 
     var data = {
     };
-    var canvas;
+    var rulerCanvas;
     var ruler;
     var toolbar;
     var webOdfCanvas;
@@ -78,13 +78,13 @@ angular.module("webodf.factory", [])
         // Queue for the next tick
         var width = webOdfCanvas.clientWidth;
         w=webOdfCanvas;
-        canvas.width = width;
-        canvas.height = 15;
+        rulerCanvas.width = width;
+        rulerCanvas.height = 15;
         toolbar.style.width = width + "px";
-        webOdfCanvas.style.top = (canvas.clientHeight + toolbar.clientHeight) + "px";
+        webOdfCanvas.style.top = (rulerCanvas.clientHeight + toolbar.clientHeight) + "px";
         container.style.width = width + "px";
         container.style.height = (webOdfCanvas.style.top + webOdfCanvas.clientHeight) + "px";
-        if (canvas.width != 0)
+        if (rulerCanvas.width != 0)
           ruler.render("#aaa", "cm", 100);
       }, 0);
     }
@@ -96,14 +96,16 @@ angular.module("webodf.factory", [])
       for (var i = 0; i < list.length; i ++) {
         if (list[i].className && list[i].className.indexOf("webodf-canvas") >= 0) {
           webOdfCanvas = list[i];
-          break;
         }
+        if (list[i].className && list[i].className.indexOf("webodf-toolbar") >= 0) {
+          toolbar = list[i];
+        }
+
       }
-      toolbar = angular.element(list)[0];
-      canvas = angular.element(element.find("canvas"))[0];
+      rulerCanvas = angular.element(element.find("canvas"))[0];
       if (!webOdfCanvas) return;
 
-      ruler = new Ruler(canvas);
+      ruler = new Ruler(rulerCanvas);
       webOdfCanvas.addEventListener("resize", function() {
         updateGeometry();
       });
