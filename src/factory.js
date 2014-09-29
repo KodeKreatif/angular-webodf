@@ -71,7 +71,19 @@ angular.module("webodf.factory", [])
       if (loadDone) {
         loadDone();
       }
+      setupGeometry();
       updateGeometry();
+    }
+
+    var setupGeometry = function() {
+      var rulerCursorCanvas;
+      var c = document.getElementsByTagName("canvas"); 
+      for (var i = 0; i < c.length; i ++) {
+        if (!c[i].id && c[i].className == "webodf-ruler") {
+          rulerCursorCanvas = c[i];
+        }
+      }
+      document.body.removeChild(rulerCursorCanvas);
     }
 
     var updateGeometry = function() {
@@ -121,6 +133,7 @@ angular.module("webodf.factory", [])
 
       ruler = new Ruler(rulerCanvas);
       webOdfCanvas.addEventListener("resize", function() {
+        setupGeometry();
         updateGeometry();
       });
       data.canvas = new odf.OdfCanvas(webOdfCanvas); 
