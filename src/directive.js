@@ -5,11 +5,34 @@ angular.module("webodf.directive", ["webodf.factory"])
     return {
       restrict: "E",
       controller: "ToolbarButtonsCtrl",
-      template: "<style>.webodf-tb-button.webodf-tb-button-active:hover {background: #ddd} .webodf-tb-button:hover {background: #ccc} .webodf-tb-button { text-align: center;vertical-align: middle;width: 50px; height: 50px;line-height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.webodf-tb-button-active { background: #aaa} </style><span class='webodf-tb-button' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
+      template: "<style>.webodf-tb-button.webodf-tb-button-active:hover {background: #ddd} .webodf-tb-button:hover {background: #ccc} .webodf-tb-button { text-align: center;vertical-align: middle;width: 50px; height: 50px;line-height: 50px;display: inline-block; cursor: pointer} .webodf-tb-button.webodf-tb-button-active { background: #aaa} </style><span class='webodf-tb-button' ng-show='b.enable' ng-repeat='b in buttons' ng-click='click(b)' ng-class='b.class'></span> {{style.italic}}" 
     }
   }
 )
+.directive("odtFileLoaded", [
+  "$parse", "Canvas",
+  function($parse, Canvas) {
+    return {
+      restrict: "A",
+      scope: false,
+      link: function(scope, element, attrs) {
+        var fn = $parse(attrs.onReadFile);
 
+        element.on("change", function(onChangeEvent) {
+          var reader = new FileReader();
+
+          reader.onload = function(onLoadEvent) {
+            scope.$apply(function() {
+              fn(scope, {$fileContent:onLoadEvent.target.result});
+            });
+          };
+
+          reader.readAsArrayBuffer((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+        });
+      }
+    };
+  }
+])
 .directive("webodf", [
   "Canvas", 
   function(Canvas) {
@@ -24,6 +47,7 @@ angular.module("webodf.directive", ["webodf.factory"])
       if (attrs.toolbar == "no" || Canvas().data.readOnly) {
         $scope.hasToolbar = false;
       }
+      Canvas().data.enableOpenFile = attrs.enableOpenFile == "yes";
       $scope.name = attrs.name;
       Canvas().data.ruler = $scope.ruler;
       Canvas().data.hasToolbar = $scope.hasToolbar;

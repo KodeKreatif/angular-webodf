@@ -13,17 +13,26 @@ angular.module("webodf.factory", [])
     var container;
     var session;
     var sessionController;
+    var caretManager;
+    var selectionViewManager;
     var odfDocument;
     var loadDone;
+    var destroyFuncs = [];
 
     var eventNotifier = new core.EventNotifier([
         "unknownError",
         "metadataChanged" 
     ]);
 
+    var metadataChanged = function(changes) {
+      eventNotifier.emit("metadataChanged", changes);
+    }
+
     var initSession = function(container) {
       if (session) return;
+      console.log("Init session for ", data.memberId);
 
+      destroyFuncs = [ data.canvas.destroy ];
       session = new ops.Session(data.canvas);
       odfDocument = session.getOdtDocument();
       var cursor = new gui.ShadowCursor(odfDocument);
@@ -32,6 +41,7 @@ angular.module("webodf.factory", [])
         directTextStylingEnabled: true, 
         directParagraphStylingEnabled: true
       });
+      destroyFuncs.push(sessionController.destroy);
       data.formattingController = sessionController.getDirectFormattingController();
 
       var viewOptions = {
@@ -39,16 +49,17 @@ angular.module("webodf.factory", [])
         caretAvatarsInitiallyVisible: false,
         caretBlinksOnRangeSelect: true
       };
-      var caretManager = new gui.CaretManager(sessionController, data.canvas.getViewport());
-      var selectionViewManager = new gui.SelectionViewManager(gui.SvgSelectionView);
+      caretManager = new gui.CaretManager(sessionController, data.canvas.getViewport());
+      destroyFuncs.push(caretManager.destroy);
+      selectionViewManager = new gui.SelectionViewManager(gui.SvgSelectionView);
+      destroyFuncs.push(selectionViewManager.destroy);
       var sessionConstraints = sessionController.getSessionConstraints();
       data.sessionView = new gui.SessionView(viewOptions, data.memberId, session, sessionConstraints, caretManager, selectionViewManager);
+      destroyFuncs.push(data.sessionView.destroy);
       selectionViewManager.registerCursor(cursor, true);
 
       sessionController.setUndoManager(new gui.TrivialUndoManager());
-      sessionController.getMetadataController().subscribe(gui.MetadataController.signalMetadataChanged, function(changes) {
-        eventNotifier.emit("metadataChanged", changes);
-      });
+      sessionController.getMetadataController().subscribe(gui.MetadataController.signalMetadataChanged, metadataChanged);
 
       var op = new ops.OpAddMember();
       op.init({
@@ -64,15 +75,36 @@ angular.module("webodf.factory", [])
       sessionController.insertLocalCursor();
       sessionController.startEditing();
 
-      data.loaded = true;
       if (initFormattingController) {
         initFormattingController(data.formattingController);
       }
+      setupGeometry();
+      updateGeometry();
       if (loadDone) {
         loadDone();
       }
-      setupGeometry();
-      updateGeometry();
+      data.loaded = true;
+      console.log("Init session done");
+    }
+
+    var close = function(cb) {
+      sessionController.endEditing();
+      sessionController.removeLocalCursor();
+      var op = new ops.OpRemoveMember();
+      op.init({
+        memberid: data.memberId
+      });
+      session.enqueue([op]);
+
+      session.close(function(err) {
+        sessionController.getMetadataController().unsubscribe(gui.MetadataController.signalMetadataChanged, metadataChanged);
+        core.Async.destroyAll(destroyFuncs, function(err) {
+          session = null;
+          sessionController = null;
+          cb(err);
+        });
+
+      });
     }
 
     var setupGeometry = function() {
@@ -83,7 +115,9 @@ angular.module("webodf.factory", [])
           rulerCursorCanvas = c[i];
         }
       }
-      document.body.removeChild(rulerCursorCanvas);
+      if (rulerCursorCanvas) {
+        document.body.removeChild(rulerCursorCanvas);
+      }
     }
 
     var updateGeometry = function() {
@@ -165,6 +199,41 @@ angular.module("webodf.factory", [])
       }
     }
 
+    var openFile = function(file) {
+      if (data.canvas) {
+        close(function() {
+          var originalReadFile;
+          var cache = {};
+
+          var readFile = function(path, encoding, cb) {
+            if (cache[path]) {
+              var array = new Uint8Array(cache[path]);
+              cb(null, array);
+            } else if (originalReadFile) {
+              originalReadFile(path, encoding, cb);
+            }
+          }
+
+          var loadEnd = function() {
+            if (reader.readyState === 2) {
+
+              originalReadFile = runtime.readFile;
+              runtime.readFile = readFile;
+              cache[file.name] = reader.result;
+              data.canvas = new odf.OdfCanvas(webOdfCanvas); 
+              if (!data.readOnly) {
+                data.canvas.addListener("statereadychange", initSession);
+              } 
+              data.canvas.load(file.name);
+            }
+          }
+          var reader = new FileReader();
+          reader.onloadend = loadEnd;
+          reader.readAsArrayBuffer(file);
+        });
+      }
+    }
+
     return function() {
       return {
         init: init,
@@ -179,7 +248,8 @@ angular.module("webodf.factory", [])
         getByteArray: getByteArray,
         session: session,
         sessionController: sessionController,
-        odfDocument: odfDocument
+        odfDocument: odfDocument,
+        openFile: openFile
       }
     }
   }
